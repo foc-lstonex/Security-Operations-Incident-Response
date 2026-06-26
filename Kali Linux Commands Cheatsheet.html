@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kali Linux CLI Cheat Sheet</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --bg: #0d1117;
+    --bg-surface: #161b22;
+    --bg-card: #1c2230;
+    --bg-code: #0d1117;
+    --border: #30363d;
+    --border-hover: #58a6ff44;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-tertiary: #484f58;
+    --accent-green: #3fb950;
+    --accent-teal: #1D9E75;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  }
+ 
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+ 
+  .container { max-width: 1200px; margin: 0 auto; }
+ 
+  /* ── Header ── */
+  .header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .prompt { font-family: var(--font-mono); color: var(--accent-green); font-size: 20px; }
+  .header-left p { font-size: 13px; color: var(--text-secondary); }
+  .header-meta { font-size: 12px; color: var(--text-tertiary); text-align: right; line-height: 1.6; }
+ 
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; }
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent-teal); }
+  .search-wrap input::placeholder { color: var(--text-tertiary); }
+ 
+  .filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    font-size: 12px;
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { background: var(--bg-surface); border-color: #58a6ff66; color: var(--text-primary); }
+  .filter-btn.active { background: #0f6e5622; color: #3fb950; border-color: var(--accent-teal); }
+ 
+  .count-bar { font-size: 12px; color: var(--text-tertiary); margin-bottom: 1.25rem; }
+ 
+  /* ── Category sections ── */
+  .cat-section { margin-bottom: 2rem; }
+  .cat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.85rem;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .cat-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); }
+  .cmd-count { font-size: 11px; color: var(--text-tertiary); }
+ 
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 10px;
+  }
+ 
+  /* ── Command cards ── */
+  .cmd-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .cmd-card:hover { border-color: var(--border-hover); background: #1e2636; }
+ 
+  .cmd-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .cmd-name { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--accent-green); }
+  .cmd-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border: 1px solid;
+    font-weight: 500;
+  }
+ 
+  .cmd-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+ 
+  .cmd-example {
+    background: var(--bg-code);
+    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+  }
+  .cmd-example-label { font-size: 10px; color: var(--text-tertiary); margin-bottom: 3px; font-family: var(--font-mono); }
+  .cmd-example code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #79c0ff;
+    display: block;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+ 
+  .cmd-when {
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+    font-style: italic;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    line-height: 1.4;
+  }
+  .cmd-when::before { content: "↳"; color: var(--accent-teal); font-style: normal; flex-shrink: 0; font-size: 12px; }
+ 
+  .no-results { text-align: center; padding: 3rem; color: var(--text-tertiary); font-size: 14px; }
+ 
+  /* ── Footer ── */
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+ 
+  /* ── Print styles ── */
+  @media print {
+    body { background: #fff; color: #111; padding: 1rem; }
+    :root {
+      --bg: #fff; --bg-surface: #f5f5f5; --bg-card: #fafafa; --bg-code: #f0f0f0;
+      --border: #ddd; --text-primary: #111; --text-secondary: #555;
+      --text-tertiary: #888; --accent-green: #1a7f3c; --accent-teal: #0f6e56;
+    }
+    .controls { display: none; }
+    .count-bar { display: none; }
+    .cmd-card { break-inside: avoid; }
+    .cat-section { break-inside: avoid; }
+    .cmd-example code { color: #1a7f3c; }
+  }
+ 
+  @media (max-width: 600px) {
+    .cmd-grid { grid-template-columns: 1fr; }
+    .header { flex-direction: column; }
+    .header-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+ 
+  <div class="header">
+    <div class="header-left">
+      <h1><span class="prompt">$_</span> Kali Linux CLI Cheat Sheet</h1>
+      <p>Essential terminal commands for beginners exploring cybersecurity</p>
+    </div>
+    <div class="header-meta">
+      46 commands &nbsp;·&nbsp; 8 categories<br>
+      Use the search &amp; filters below to navigate
+    </div>
+  </div>
+ 
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search" placeholder="Search commands, descriptions, examples…" oninput="filterAll()" />
+    </div>
+    <div class="filter-btns" id="filter-btns"></div>
+  </div>
+  <div class="count-bar" id="count-bar"></div>
+  <div id="content"></div>
+ 
+  <div class="footer">
+    <span>Kali Linux CLI Cheat Sheet &nbsp;·&nbsp; For educational use</span>
+    <span>All commands tested on Kali Linux 2024+</span>
+  </div>
+</div>
+ 
+<script>
+const CATEGORIES = [
+  { id: "navigation",   label: "Navigation",       dotColor: "#3fb950",  badgeBg: "#0f3d1a", badgeColor: "#3fb950", badgeBorder: "#1a6b2e" },
+  { id: "file",         label: "File ops",          dotColor: "#58a6ff",  badgeBg: "#0d2d4a", badgeColor: "#58a6ff", badgeBorder: "#1a4a7a" },
+  { id: "network",      label: "Networking",        dotColor: "#1D9E75",  badgeBg: "#073325", badgeColor: "#3ccfa0", badgeBorder: "#0f6e56" },
+  { id: "permissions",  label: "Permissions",       dotColor: "#d29922",  badgeBg: "#3d2b00", badgeColor: "#d29922", badgeBorder: "#7a5500" },
+  { id: "process",      label: "Processes",         dotColor: "#a371f7",  badgeBg: "#2d1f50", badgeColor: "#a371f7", badgeBorder: "#6e3fb5" },
+  { id: "recon",        label: "Recon & scanning",  dotColor: "#f78166",  badgeBg: "#3d1a10", badgeColor: "#f78166", badgeBorder: "#a0391e" },
+  { id: "system",       label: "System info",       dotColor: "#8b949e",  badgeBg: "#1c2230", badgeColor: "#8b949e", badgeBorder: "#30363d" },
+  { id: "text",         label: "Text & search",     dotColor: "#db61a2",  badgeBg: "#3d1030", badgeColor: "#db61a2", badgeBorder: "#8b2060" },
+];
+ 
+const COMMANDS = [
+  // Navigation
+  { cat:"navigation", name:"pwd",         desc:"Print working directory — shows your current location in the file system.",                                            example:"pwd",                                                                        when:"Useful when lost in a deep directory tree." },
+  { cat:"navigation", name:"ls",          desc:"List directory contents. Use -la to show hidden files and detailed permissions.",                                      example:"ls -la /var/log",                                                            when:"Before doing anything in a new directory." },
+  { cat:"navigation", name:"cd",          desc:"Change directory. Use .. to go up one level, ~ to jump home instantly.",                                              example:"cd /opt/tools\ncd ..",                                                       when:"Navigating into tool folders, config dirs, etc." },
+  { cat:"navigation", name:"find",        desc:"Search for files or directories by name, type, size, or permissions — recursively.",                                  example:"find / -name '*.conf' 2>/dev/null",                                          when:"Locating config files, SUID binaries, or hidden logs." },
+  { cat:"navigation", name:"locate",      desc:"Fast file search using a pre-built index database. Run updatedb first to refresh it.",                                example:"locate nmap.conf",                                                           when:"When find is too slow — run updatedb first." },
+ 
+  // File ops
+  { cat:"file", name:"cp",               desc:"Copy files or directories. Use -r for recursive directory copy.",                                                       example:"cp -r /tools/wordlists ~/wordlists",                                         when:"Duplicating files before modifying them." },
+  { cat:"file", name:"mv",               desc:"Move or rename files and directories.",                                                                                 example:"mv output.txt results/scan1.txt",                                            when:"Organising scan results or renaming files." },
+  { cat:"file", name:"rm",               desc:"Remove files. Use -rf to remove directories recursively — use with caution!",                                          example:"rm -rf /tmp/oldscans/",                                                      when:"Cleaning up temp files after an engagement." },
+  { cat:"file", name:"mkdir",            desc:"Create new directories. -p creates all parent directories as needed.",                                                  example:"mkdir -p ~/pentest/target1/scans",                                           when:"Setting up a tidy folder structure per target." },
+  { cat:"file", name:"cat",              desc:"Output file contents to the terminal in full.",                                                                         example:"cat /etc/passwd",                                                            when:"Quick view of config files, password hashes, logs." },
+  { cat:"file", name:"less",             desc:"Paginated file viewer — navigate with arrow keys, search with /, quit with q.",                                        example:"less /var/log/auth.log",                                                     when:"Reading large log files without flooding the screen." },
+  { cat:"file", name:"nano / vim",       desc:"Terminal text editors for creating and editing files in-place.",                                                        example:"nano /etc/hosts\nvim exploit.py",                                            when:"Editing config files or writing scripts in-terminal." },
+  { cat:"file", name:"tar",              desc:"Archive and compress files. -czvf to create a .tar.gz, -xzvf to extract.",                                            example:"tar -czvf results.tar.gz ./scans/\ntar -xzvf tools.tar.gz",                  when:"Packaging reports or extracting downloaded toolkits." },
+  { cat:"file", name:"wget / curl",      desc:"Download files from the web. curl also interacts with HTTP APIs and headers.",                                          example:"wget https://example.com/file.zip\ncurl -I https://target.com",              when:"Downloading wordlists, tools, or fetching HTTP headers." },
+ 
+  // Networking
+  { cat:"network", name:"ifconfig / ip a", desc:"Display network interface info including IP addresses, MAC, and state.",                                             example:"ip a\nifconfig eth0",                                                        when:"First thing to run — know your own IP on a pentest." },
+  { cat:"network", name:"ping",           desc:"Test reachability of a host by sending ICMP echo requests.",                                                           example:"ping -c 4 192.168.1.1",                                                      when:"Checking if a host is alive on the network." },
+  { cat:"network", name:"traceroute",     desc:"Trace the network path packets take to reach a destination host.",                                                     example:"traceroute google.com",                                                      when:"Diagnosing routing issues or mapping network hops." },
+  { cat:"network", name:"netstat / ss",   desc:"Show active connections, listening ports, and socket statistics.",                                                     example:"ss -tulnp\nnetstat -an",                                                     when:"Checking what services are exposed on your machine." },
+  { cat:"network", name:"nmap",           desc:"Powerful network scanner — discovers hosts, open ports, running services, and OS.",                                   example:"nmap -sV -O 192.168.1.0/24\nnmap -p 80,443 target.com",                     when:"Core recon tool — enumerate targets before any attack." },
+  { cat:"network", name:"tcpdump",        desc:"Capture live network packets from an interface and save to a .pcap file.",                                            example:"tcpdump -i eth0 -w capture.pcap",                                            when:"Sniffing traffic for later analysis in Wireshark." },
+  { cat:"network", name:"nc (netcat)",    desc:"The 'Swiss army knife' — port scanning, file transfer, banners, reverse shells.",                                     example:"nc -lvnp 4444\nnc 192.168.1.5 80",                                          when:"Setting up listeners, transferring files, testing ports." },
+  { cat:"network", name:"ssh",            desc:"Securely connect to a remote machine via an encrypted shell session.",                                                 example:"ssh user@192.168.1.10\nssh -i key.pem user@host",                            when:"Accessing remote servers or pivoting in a network." },
+ 
+  // Permissions
+  { cat:"permissions", name:"chmod",      desc:"Change file permissions. Use numeric (755) or symbolic (u+x) notation.",                                              example:"chmod +x exploit.sh\nchmod 600 id_rsa",                                     when:"Making scripts executable or securing private keys." },
+  { cat:"permissions", name:"chown",      desc:"Change the owner and group of a file or directory.",                                                                   example:"chown root:root /tmp/backdoor",                                              when:"Resetting ownership during privilege escalation labs." },
+  { cat:"permissions", name:"sudo",       desc:"Execute a command with elevated (root) privileges. -l lists your allowed commands.",                                  example:"sudo nmap -sS target.com\nsudo -l",                                          when:"Running tools that need root; check -l to see what's allowed." },
+  { cat:"permissions", name:"su",         desc:"Switch to another user account — including root.",                                                                     example:"su root\nsu - www-data",                                                     when:"Pivoting between accounts after credential discovery." },
+  { cat:"permissions", name:"id",         desc:"Display current user identity, UID, GID, and all group memberships.",                                                 example:"id",                                                                         when:"Instantly confirm who you are after gaining a shell." },
+ 
+  // Processes
+  { cat:"process", name:"ps",             desc:"List running processes. ps aux shows all processes with user and command detail.",                                     example:"ps aux\nps aux | grep apache",                                               when:"Finding running services or suspicious background processes." },
+  { cat:"process", name:"top / htop",     desc:"Real-time interactive process viewer showing CPU and memory usage.",                                                   example:"htop",                                                                       when:"Monitoring resource usage during intensive scans." },
+  { cat:"process", name:"kill / killall", desc:"Terminate a process by its PID, or kill all processes matching a name.",                                              example:"kill -9 1234\nkillall metasploit",                                           when:"Stopping hung tools or cleaning up background processes." },
+  { cat:"process", name:"bg / fg / jobs", desc:"Manage background/foreground jobs. Ctrl+Z suspends a running job.",                                                  example:"nmap target &\njobs\nfg %1",                                                 when:"Running long scans in background while doing other work." },
+  { cat:"process", name:"cron / crontab", desc:"Schedule commands to run automatically at defined times.",                                                            example:"crontab -e\n* * * * * /usr/bin/backup.sh",                                   when:"Automating tasks or practising persistence in labs." },
+ 
+  // Recon & scanning
+  { cat:"recon", name:"whois",            desc:"Query domain registration info — owner, registrar, nameservers, and dates.",                                          example:"whois target.com",                                                           when:"OSINT phase — understanding who owns a domain." },
+  { cat:"recon", name:"dig / nslookup",   desc:"DNS lookup tool — query A, MX, TXT, NS records and perform zone transfers.",                                         example:"dig target.com ANY\ndig MX target.com",                                      when:"Enumerating DNS records, finding subdomains, mail servers." },
+  { cat:"recon", name:"nikto",            desc:"Web server scanner — checks for dangerous files, outdated software, and misconfigurations.",                          example:"nikto -h http://target.com",                                                 when:"Quick automated web vuln check before deeper testing." },
+  { cat:"recon", name:"gobuster",         desc:"Brute-force web directories and DNS subdomains using wordlists.",                                                      example:"gobuster dir -u http://target.com -w /usr/share/wordlists/dirb/common.txt",  when:"Discovering hidden web paths and subdomains." },
+  { cat:"recon", name:"hydra",            desc:"Fast network login cracker supporting dozens of protocols (SSH, FTP, HTTP, etc.).",                                   example:"hydra -l admin -P rockyou.txt ssh://192.168.1.10",                           when:"Password brute-forcing SSH, FTP, or HTTP forms in labs." },
+  { cat:"recon", name:"hashcat / john",   desc:"Offline password hash cracking with wordlist and rule-based attacks.",                                                example:"hashcat -m 0 hash.txt rockyou.txt\njohn --wordlist=rockyou.txt hash.txt",    when:"Cracking captured hashes (MD5, NTLM, bcrypt, etc.)." },
+ 
+  // System info
+  { cat:"system", name:"uname -a",        desc:"Display full kernel version, architecture, and OS information.",                                                      example:"uname -a",                                                                   when:"First step in privilege escalation recon." },
+  { cat:"system", name:"hostname",        desc:"Show the machine's hostname. -I shows all IP addresses.",                                                             example:"hostname\nhostname -I",                                                      when:"Confirming which machine you're on in a lab network." },
+  { cat:"system", name:"df / du",         desc:"df shows disk space across all mounts; du shows usage of a specific path.",                                          example:"df -h\ndu -sh /var/log/*",                                                   when:"Checking storage before saving large capture files." },
+  { cat:"system", name:"env",             desc:"Display all current environment variables.",                                                                          example:"env\nenv | grep PATH",                                                       when:"Checking PATH for hijacking, or finding credentials in env vars." },
+  { cat:"system", name:"history",         desc:"Show previously run commands in the current shell session.",                                                          example:"history\nhistory | grep ssh",                                                when:"Reviewing past commands or finding credentials typed earlier." },
+  { cat:"system", name:"apt / apt-get",   desc:"Package manager — install, update, upgrade, or remove software.",                                                    example:"sudo apt update && sudo apt install metasploit-framework",                   when:"Installing new tools or keeping Kali up to date." },
+ 
+  // Text & search
+  { cat:"text", name:"grep",              desc:"Search text for patterns using regex. -r searches recursively through directories.",                                  example:"grep -r 'password' /var/www/html\ngrep -i 'error' access.log",              when:"Finding credentials, errors, or keywords in files or output." },
+  { cat:"text", name:"awk",              desc:"Powerful text-processing language. Splits lines into fields and lets you manipulate, filter, and format them.", example:"awk '{print $1}' access.log\nawk -F: '{print $1}' /etc/passwd",              when:"Extracting specific columns from logs, scan output, or structured files." },
+  { cat:"text", name:"cut",              desc:"Extract specific columns from text by delimiter or character position.",                                               example:"cat /etc/passwd | cut -d: -f1",                                              when:"Quick field extraction when awk is more than you need." },
+  { cat:"text", name:"sed",              desc:"Stream editor — find-and-replace text in files or pipelines.",                                                         example:"sed 's/foo/bar/g' file.txt",                                                 when:"Modifying config files or batch-processing wordlists." },
+  { cat:"text", name:"sort / uniq",      desc:"Sort lines alphabetically or numerically; uniq removes duplicate adjacent lines.",                                    example:"sort ips.txt | uniq -c | sort -rn",                                          when:"Processing scan output, de-duping IP or hash lists." },
+  { cat:"text", name:"wc",               desc:"Count lines, words, and characters in a file or piped input.",                                                        example:"wc -l rockyou.txt\ngrep 'open' scan.txt | wc -l",                           when:"Checking wordlist size or counting open ports in results." },
+  { cat:"text", name:"tee",              desc:"Read from stdin and write to both a file and stdout simultaneously.",                                                  example:"nmap -sV target.com | tee scan_results.txt",                                 when:"Saving tool output while also seeing it live in the terminal." },
+  { cat:"text", name:"| (pipe)",         desc:"Chain commands — pass the output of one command as input to the next.",                                               example:"ps aux | grep root | awk '{print $11}'",                                     when:"The backbone of Linux power — combine simple tools to do complex things." },
+];
+ 
+const catMap = {};
+CATEGORIES.forEach(c => { catMap[c.id] = c; });
+let activeFilter = "all";
+ 
+function badge(cat) {
+  const c = catMap[cat];
+  return `<span class="cmd-badge" style="background:${c.badgeBg};color:${c.badgeColor};border-color:${c.badgeBorder};">${c.label}</span>`;
+}
+ 
+function render(commands) {
+  const content = document.getElementById("content");
+  const countBar = document.getElementById("count-bar");
+  content.innerHTML = "";
+  countBar.textContent = `Showing ${commands.length} of ${COMMANDS.length} commands`;
+ 
+  if (commands.length === 0) {
+    content.innerHTML = `<div class="no-results">No commands match your search.</div>`;
+    return;
+  }
+ 
+  const byCat = {};
+  CATEGORIES.forEach(c => { byCat[c.id] = []; });
+  commands.forEach(cmd => { if (byCat[cmd.cat]) byCat[cmd.cat].push(cmd); });
+ 
+  CATEGORIES.forEach(cat => {
+    const cmds = byCat[cat.id];
+    if (!cmds.length) return;
+ 
+    const sec = document.createElement("div");
+    sec.className = "cat-section";
+    sec.innerHTML = `
+      <div class="cat-header">
+        <div class="cat-dot" style="background:${cat.dotColor}"></div>
+        <span class="cat-title">${cat.label}</span>
+        <span class="cmd-count">${cmds.length} command${cmds.length !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="cmd-grid" id="grid-${cat.id}"></div>`;
+    content.appendChild(sec);
+ 
+    const grid = sec.querySelector(`#grid-${cat.id}`);
+    cmds.forEach(cmd => {
+      const card = document.createElement("div");
+      card.className = "cmd-card";
+      card.innerHTML = `
+        <div class="cmd-top">
+          <span class="cmd-name">${cmd.name}</span>
+          ${badge(cmd.cat)}
+        </div>
+        <div class="cmd-desc">${cmd.desc}</div>
+        <div class="cmd-example">
+          <div class="cmd-example-label">// example</div>
+          <code>${cmd.example}</code>
+        </div>
+        <div class="cmd-when">${cmd.when}</div>`;
+      grid.appendChild(card);
+    });
+  });
+}
+ 
+function filterAll() {
+  const q = document.getElementById("search").value.toLowerCase();
+  let filtered = COMMANDS;
+  if (activeFilter !== "all") filtered = filtered.filter(c => c.cat === activeFilter);
+  if (q) filtered = filtered.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.desc.toLowerCase().includes(q) ||
+    c.example.toLowerCase().includes(q) ||
+    c.when.toLowerCase().includes(q)
+  );
+  render(filtered);
+}
+ 
+function setFilter(id) {
+  activeFilter = id;
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.id === id);
+  });
+  filterAll();
+}
+ 
+const btnContainer = document.getElementById("filter-btns");
+[{ id: "all", label: "All" }, ...CATEGORIES].forEach(cat => {
+  const btn = document.createElement("button");
+  btn.className = "filter-btn" + (cat.id === "all" ? " active" : "");
+  btn.dataset.id = cat.id;
+  btn.textContent = cat.label;
+  btn.onclick = () => setFilter(cat.id);
+  btnContainer.appendChild(btn);
+});
+ 
+render(COMMANDS);
+</script>
+</body>
+</html>
+ 
