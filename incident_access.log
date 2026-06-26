@@ -1,0 +1,9 @@
+[2026-06-25 04:12:01] AUTH_ATTEMPT | SRC: 192.0.2.88 -> DST: mail.enterprise.com | USER: jsmith@enterprise.com | STATUS: SUCCESS
+[2026-06-25 04:14:22] AUTH_ATTEMPT | SRC: 192.0.2.88 -> DST: mail.enterprise.com | USER: mroth@enterprise.com | STATUS: SUCCESS
+[2026-06-25 04:15:09] AUTH_ATTEMPT | SRC: 192.0.2.88 -> DST: mail.enterprise.com | USER: tlee@enterprise.com   | STATUS: SUCCESS
+[2026-06-25 04:18:55] AUTH_ATTEMPT | SRC: 192.0.2.88 -> DST: vpn.enterprise.com  | USER: jsmith@enterprise.com | STATUS: SUCCESS
+[2026-06-25 04:22:10] AUTH_ATTEMPT | SRC: 192.0.2.88 -> DST: mail.enterprise.com | USER: dclark@enterprise.com | STATUS: SUCCESS
+[2026-06-25 04:31:44] AUTH_ATTEMPT | SRC: 192.0.2.88 -> DST: hr-db.enterprise.com  | USER: dclark@enterprise.com | STATUS: SUCCESS
+[2026-06-25 04:45:00] SOC_ALERT    | SYSTEM: SIEM_CORE | MESSAGE: Multiple anomalous geolocation logins from IP 192.0.2.88
+[2026-06-25 05:02:11] IR_ACTION    | USER: admin_ir    | MESSAGE: Security Group containment applied. IP 192.0.2.88 blocked.
+[2026-06-25 05:30:00] IR_ACTION    | USER: admin_ir    | MESSAGE: Global password resets forced for compromised accounts.
